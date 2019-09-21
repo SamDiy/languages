@@ -35,7 +35,7 @@ router.post('/api/article', async function(req, res){
 
 router.put('/api/article', async function(req, res){
   const db = getDB();
-  let newArticle = req.body;
+  let newArticle = _.omit(req.body, '_id');
   let { articleId } = req.query;
   let article = await db.collection('article').findOne({ _id: db.ObjectId(articleId) });
   article = Object.assign({}, article, newArticle);

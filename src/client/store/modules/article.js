@@ -8,7 +8,9 @@ import _ from 'lodash';
 const actions = {
   getAticles: createAction('GET_ATICLES'),
   selectArticle: createAction('SELECT_ARTICLE', (articleId) => {return { articleId }}),
-  changeArticleData: createAction('CHANGE_ARTICLE_DATA', (fieldName, value) => { return { fieldName, value }})
+  changeArticleData: createAction('CHANGE_ARTICLE_DATA', (fieldName, value) => { return { fieldName, value }}),
+  addNewArticle: createAction('ADD_NEW_ARTICLE', (article) => {return { article }}),
+  saveArticle: createAction('SAVE_ARTICLE', (article) => { return { article }})
 };
 
 // Sagas
@@ -23,8 +25,32 @@ function* sagaGetAticles(action){
   }
 }
 
+function* sagaAddNewArticle(action){
+  yield put({ type: 'ADD_NEW_ARTICLE_STARTED' });
+  try{
+    let result = yield axios.post(`${config.baseUrl}article`, action.payload.article);
+    yield put({ type: 'ADD_NEW_ARTICLE_SUCCEEDED', payload: { newArticle: result.data }});
+  }catch(error){
+    console.log(error);
+    yield put({ type: 'ADD_NEW_ARTICLE_ERROR' });
+  }
+}
+
+function* sagaSaveArticle(action){
+  yield put({ type: 'SAVE_ARTICLE_STARTED' });
+  try{
+    let result = yield axios.put(`${config.baseUrl}article`, action.payload.article, { params: { articleId: action.payload.article._id }});
+    yield put({ type: 'SAVE_ARTICLE_SUCCEEDED' });
+  }catch(error){
+    console.log(error);
+    yield put({ type: 'SAVE_ARTICLE_ERROR' });
+  }
+}
+
 function* rootSaga(){
-  yield takeEvery('GET_ATICLES', sagaGetAticles)
+  yield takeEvery('GET_ATICLES', sagaGetAticles),
+  yield takeEvery('ADD_NEW_ARTICLE', sagaAddNewArticle),
+  yield takeEvery('SAVE_ARTICLE', sagaSaveArticle)
 }
 
 // Reducers
@@ -44,6 +70,11 @@ const reducers = handleActions({
     articleData[action.payload.fieldName] = action.payload.value;
     article = Object.assign({}, article, articleData);
     return Object.assign({}, state, { selectedArticle: article });
+  },
+  'ADD_NEW_ARTICLE_SUCCEEDED': (state, action) => {
+    let articles = state.articles.slice();
+    articles.push(action.payload.newArticle);
+    return Object.assign({}, state, { articles, selectedArticle: action.payload.newArticle });
   }
 }, { articles: [], selectedArticle: {}});
 

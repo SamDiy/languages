@@ -45,7 +45,7 @@ function* sagaAddNewUser(action){
   yield put({ type: 'ADD_NEW_USER_STARTED' });
   try{
     let result = yield axios.post(`${config.baseUrl}user`, action.payload.user);
-    yield put({ type: 'ADD_NEW_USER_SUCCEEDED', payload: { newUser: result.data } });
+    yield put({ type: 'ADD_NEW_USER_SUCCEEDED', payload: { newUser: result.data }});
   } catch (error){
     console.log(error);
     yield put({ type: 'ADD_NEW_USER_FAILED' });

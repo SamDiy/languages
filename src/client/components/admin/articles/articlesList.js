@@ -15,10 +15,15 @@ class ArticlesList extends Component{
     super(props);
     props.getAticles();
     this.onOpenArticle = this.onOpenArticle.bind(this);
+    this.onAddNewArticle = this.onAddNewArticle.bind(this);
   }
 
   onOpenArticle(articleId){
     this.props.selectArticle(articleId);
+  }
+
+  onAddNewArticle(){
+    this.props.selectArticle();
   }
 
   render(){
@@ -27,6 +32,7 @@ class ArticlesList extends Component{
         <h3 className="ml-2">{translate('articles')}</h3>
         <div className="row">
             <div className="col-4">
+              <button onClick={() => this.onAddNewArticle()} type="button" className="ml-2 btn btn-light">{translate('add new article')}</button>
               <ul>
                 {this.props.articles.map((article) =>
                   <li key={article._id}>

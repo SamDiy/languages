@@ -35,8 +35,7 @@ router.post('/api/user', async function(req, res){
 
 router.put('/api/user', async function(req, res){
   const db = getDB();
-  let newUser = req.body;
-  newUser = _.omit(newUser, '_id');
+  let newUser = _.omit(req.body, '_id');
   let { userId } = req.query;
   let user = await db.collection('user').findOne({ _id: db.ObjectId(userId)});
   user = Object.assign({}, user, newUser);
