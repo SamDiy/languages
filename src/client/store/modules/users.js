@@ -15,7 +15,8 @@ const actions = {
   selectUser: createAction('SELECT_USER', (userId) => { return { userId }}),
   changeUserData: createAction('CHANGE_USER_DATA', (fieldName, value) => { return { fieldName, value }}),
   saveUser: createAction('SAVE_USER', (user) => { return { user }}),
-  deleteUser: createAction('DELETE_USER', (userId) => { return {userId}}) 
+  deleteUser: createAction('DELETE_USER', (userId) => { return {userId}}),
+  userSignIn: createAction('USER_SIGN_IN', (userLogin, userPassword) => { return { userLogin, userPassword }}) 
 };
 
 // Sagas
@@ -66,11 +67,23 @@ function* sagaDeleteUser(action){
   }
 }
 
+function* sagaUserSignIn(action){
+  yield put({ type: 'USER_SIGN_IN_STARTED' });
+  try{
+    let result = yield axios.get(`${config.baseUrl}singIn`, { params: { userLogin: action.payload.userLogin, userPassword: action.payload.userPassword }});
+    yield put({ type: 'USER_SIGN_IN_SUCCEEDED', payload: { currentUser: result.data }});
+  }catch(error){
+    console.log(error);
+    yield put({ type: 'USER_SIGN_IN_FAILED' });
+  }
+}
+
 function* rootSaga(){
   yield takeEvery('FETCH_USERS', sagaFetchUsers),
   yield takeEvery('SAVE_USER', sagaSaveUser),
   yield takeEvery('ADD_NEW_USER', sagaAddNewUser),
-  yield takeEvery('DELETE_USER', sagaDeleteUser)
+  yield takeEvery('DELETE_USER', sagaDeleteUser),
+  yield takeEvery('USER_SIGN_IN', sagaUserSignIn)
 }
 
 // Reducers
@@ -110,7 +123,10 @@ const reducers = handleActions({
         return user;
     });
     return Object.assign({}, state, { users });
+  },
+  'USER_SIGN_IN_SUCCEEDED': (state, action) => {
+    return Object.assign({}, state, { currentUser: action.payload.currentUser });
   }
-}, { users: [], selectedUser: {}});
+}, { users: [], selectedUser: {}, currentUser: {}});
 
 export default { actions, reducers, rootSaga: rootSaga };

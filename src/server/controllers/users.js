@@ -14,6 +14,18 @@ router.get('/api/users', async function(req, res){
   res.send(JSON.stringify(users));
 });
 
+router.get('/api/singIn', async function(req, res){
+  const db = getDB();
+  let { userLogin, userPassword } = req.query;
+  let user = await db.collection('user').findOne({ $or: [{ name: userLogin }, { email: userLogin }]});
+  res.setHeader('Content-Type', 'application/json');
+  if(user && _.isEqual(user.password, userPassword)){
+    res.send(JSON.stringify(_.omit(user, 'password')));
+  }else{
+    res.status(500).send(JSON.stringify({ ok: false, message: "User was not found or password is wrong" }));
+  }  
+});
+
 router.get('/api/user', async function(req, res){
   const db = getDB();
   let { userId } = req.query;

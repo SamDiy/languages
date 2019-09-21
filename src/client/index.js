@@ -11,4 +11,6 @@ import 'bootstrap/dist/css/bootstrap.min.css';
 import $ from 'jquery';
 import 'bootstrap/dist/js/bootstrap.bundle.min';
 
+import './additional/main.css';
+
 ReactDOM.render(<Provider store={store}><Router><App /></Router></Provider>, document.getElementById('root'));

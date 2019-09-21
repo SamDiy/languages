@@ -5,6 +5,7 @@ import { Route, Link } from 'react-router-dom';
 
 import IndexWeb from './web/IndexWeb';
 import IndexAdmin from './admin/IndexAdmin';
+import StartingPage from './startingPage'
 
 import localeModule from '../store/modules/locale';
 const localeActions = localeModule.actions;
@@ -15,7 +16,7 @@ import { initTranslate, translate } from '../lib/translater';
 class App extends Component {
 
   constructor(props){
-    super();
+    super(props);
     props.getUsers();
     props.fetchAllLocales();
     props.getLocale('en');
@@ -26,12 +27,14 @@ class App extends Component {
     return(
       <div>
         <ul>
-          <li><Link to='/'>{translate('web')}</Link></li>
+          <li><Link to='/web'>{translate('web')}</Link></li>
           <li><Link to='/admin'>{translate('admin')}</Link></li>
+          <li><Link to='/'>{translate('starting page')}</Link></li>
         </ul>
         <div>
-          <Route exact path="/" component={IndexWeb} />
-          <Route path="/admin" component={IndexAdmin} />        
+          <Route path="/web" component={IndexWeb} />
+          <Route path="/admin" component={IndexAdmin} />
+          <Route exact path="/" component={StartingPage}/>        
         </div>        
       </div>
     );
