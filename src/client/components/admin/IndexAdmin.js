@@ -10,6 +10,7 @@ import { translate } from '../../lib/translater';
 import UserList from './users/userList';
 import LocaleList from './locale/lokaleList';
 import ArticlesList from './articles/articlesList';
+import TestsList from './tests/testsList';
 
 class IndexAdmin extends Component {
 
@@ -28,14 +29,15 @@ class IndexAdmin extends Component {
         <nav className="navbar navbar-light bg-light">
           <Link className="nav-link" to='/admin/users'>{translate('users')}</Link>
           <Link className="nav-link" to='/admin/articles'>{translate('articles')}</Link>
-          <Link className="nav-link" to='#'>{translate('tests')}</Link>
+          <Link className="nav-link" to='/admin/tests'>{translate('tests')}</Link>
           <Link className="nav-link" to='/admin/locale'>{translate('locales')}</Link>
           <Link className="nav-link" to='/'>{translate('web')}</Link>
         </nav>
         <div>
           <Route path="/admin/users" component={UserList} />
           <Route path="/admin/locale" component={LocaleList} />
-          <Route path="/admin/articles" component={ArticlesList} />       
+          <Route path="/admin/articles" component={ArticlesList} />
+          <Route path="/admin/tests" component={TestsList} />      
         </div>
       </div>
     );

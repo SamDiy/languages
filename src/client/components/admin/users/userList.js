@@ -11,6 +11,7 @@ class UserList extends Component {
 
   constructor(props){
     super(props);
+    props.getUsers();
     this.onOpenUser = this.onOpenUser.bind(this);
     this.onDeleteUser = this.onDeleteUser.bind(this);
     this.onAddNewUser = this.onAddNewUser.bind(this);

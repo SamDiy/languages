@@ -6,6 +6,7 @@ const app = express();
 const usersController = require('./controllers/users');
 const localeController = require('./controllers/locale');
 const articleController = require('./controllers/articles');
+const testController = require('./controllers/tests');
 const { initDB } = require('./db/index');
 initDB();
 
@@ -20,6 +21,7 @@ app.listen(3000, function(){
 app.use(usersController);
 app.use(localeController);
 app.use(articleController);
+app.use(testController);
 
 app.get('/*', function(req, res){
   res.send(`<!DOCTYPE html>
