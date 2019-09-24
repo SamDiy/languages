@@ -39,8 +39,8 @@ class UserList extends Component {
           <div className="col-6">
           <button onClick={() => this.onAddNewUser()} type="button" className="ml-2 btn btn-light">{translate('add new')}</button>
             <ul>
-              {this.props.users.map((item) =>
-                <li>
+              {this.props.users.map((item, index) =>
+                <li key={index}>
                   <span className="mr-2">{item.name}</span>
                   <span className="mr-2">{item.email}</span>
                   <button onClick={() => this.onOpenUser(item._id)} type="button" className="btn btn-link">{translate('open')}</button>
