@@ -5,7 +5,7 @@ import { translate } from '../../../lib/translater';
 import testModule from '../../../store/modules/test';
 const testActions = testModule.actions;
 
-import TestForm from './testform';
+import TestForm from './testForm';
 
 class TestList extends Component {
 

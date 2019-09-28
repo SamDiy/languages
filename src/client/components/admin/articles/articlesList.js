@@ -13,13 +13,13 @@ class ArticlesList extends Component{
 
   constructor(props){
     super(props);
-    props.getAticles();
+    props.getArticleNames();
     this.onOpenArticle = this.onOpenArticle.bind(this);
     this.onAddNewArticle = this.onAddNewArticle.bind(this);
   }
 
   onOpenArticle(articleId){
-    this.props.selectArticle(articleId);
+    this.props.selectRemoteArticle(articleId);
   }
 
   onAddNewArticle(){
@@ -34,7 +34,7 @@ class ArticlesList extends Component{
             <div className="col-4">
               <button onClick={() => this.onAddNewArticle()} type="button" className="ml-2 btn btn-light">{translate('add new article')}</button>
               <ul>
-                {this.props.articles.map((article) =>
+                {this.props.articleNames.map((article) =>
                   <li key={article._id}>
                     <span>{article.name}</span>
                     <button onClick={() => this.onOpenArticle(article._id)} type="button" className="btn btn-link">{translate('open')}</button>
@@ -55,7 +55,7 @@ class ArticlesList extends Component{
 
 function mapStateToProps(state){
   return {
-    articles: state.articles.articles || []
+    articleNames: state.articles.articleNames || []
   }
 }
 

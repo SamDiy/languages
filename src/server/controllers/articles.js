@@ -14,6 +14,13 @@ router.get('/api/articles', async function(req, res){
   res.send(JSON.stringify(articles));
 });
 
+router.get('/api/articles/names', async function(req, res){
+  const db = getDB();
+  let articleNames = await db.collection('article').find({}, { projection: { name: 1, _id: 1 }}).toArray();
+  res.setHeader('Content-Type', 'application/json');
+  res.send(JSON.stringify(articleNames));
+});
+
 router.get('/api/article', async function(req, res){
   const db = getDB();
   let { articleId } = req.query;

@@ -7,6 +7,8 @@ import _ from 'lodash';
 import testModule from '../../../store/modules/test';
 const testActions = testModule.actions;
 
+import TestQuestion from './testQuestion';
+
 class TestForm extends Component {
 
   constructor(props){
@@ -53,7 +55,16 @@ class TestForm extends Component {
   }
 
   onAnswerrightChange(questionIndex, answerIndex, value){
-    this.onChangeData(`questions[${questionIndex}].answers[${answerIndex}].right`, value);
+    let question = _.get(this.props.selectedTest, `questions[${questionIndex}]`);
+    if(question.type == 'oneRight'){
+      let answers =_.map(question.answers, (answer, i) => {
+        answer.right = answerIndex == i ? value : false
+        return answer
+      });
+      this.onChangeData(`questions[${questionIndex}].answers`, answers);
+    }else{
+      this.onChangeData(`questions[${questionIndex}].answers[${answerIndex}].right`, value);
+    }    
   }
 
   render(){    
@@ -68,29 +79,17 @@ class TestForm extends Component {
             <input onChange={(event) => this.onChangeData('name', event.target.value)} ref="testName" type="text" className="form-control mb-2" id="test-name" value={this.props.selectedTest.name || ""} placeholder={translate('test name')} />
             <button onClick={() => this.onAddNewQuestion()} type="button" className="btn btn-light save-button mb-2">{translate('add question')}</button>
             <ul>
-              {_.map(this.props.selectedTest.questions, (question, questionIndex) => 
-                <li key={questionIndex}>
-                  <label htmlFor={`text-questio-${questionIndex}`}>{`${translate('text question')} ${questionIndex + 1}`}</label>
-                  <textarea onChange={(event) => this.onChangeData(`questions[${questionIndex}].text`, event.target.value)} id={`text-questio-${questionIndex}`} className="form-control" value={question.text || ""}></textarea>
-                  <input onChange={(event) => this.onChangeData(`questions[${questionIndex}].price`, event.target.value)} className="form-control mt-1 mb-2" type="number" value={question.price || ""}/>
-                  <button onClick={() => this.onAddNewAnswer(questionIndex)} type="button" className="btn btn-light save-button mb-2">{translate('add answer')}</button>
-                  <ul>
-                    {_.map(question.answers, (answer, answerIndex) => 
-                      <li key={`${questionIndex}-${answerIndex}`}>
-                        <div className="answer-container">
-                          <div class="form-group answer-text">
-                            <label class="form-check-label" htmlFor={`text-answer-${questionIndex}-${answerIndex}`}>{`${translate('text answer')} ${answerIndex + 1}`}</label>
-                            <textarea onChange={(event) => this.onAnswerTextChange(questionIndex, answerIndex, event.target.value)} id={`text-answer-${questionIndex}-${answerIndex}`} className="form-control" value={answer.text || ""}></textarea>
-                          </div>
-                          <div class="form-group form-check answer-checkbox ml-1">
-                            <input onChange={(event) => this.onAnswerrightChange(questionIndex, answerIndex, event.target.checked)} type="checkbox" class="form-check-input" id={`right-answer-${questionIndex}-${answerIndex}`} checked={answer.right || false}/>
-                            <label class="form-check-label" htmlFor={`right-answer-${questionIndex}-${answerIndex}`}>{translate('right answer')}</label>
-                          </div>
-                        </div>
-                      </li>
-                    )}
-                  </ul>
-                </li>
+              {_.map(this.props.selectedTest.questions, (question, questionIndex) =>
+                <TestQuestion 
+                  key={questionIndex} 
+                  questionIndex={questionIndex} 
+                  question={question} 
+                  onChangeData={this.onChangeData}
+                  onAddNewAnswer={this.onAddNewAnswer}
+                  onAnswerTextChange={this.onAnswerTextChange}
+                  onAnswerrightChange={this.onAnswerrightChange}
+                  questionTypes={[{ value: 'oneRight', label: translate('one right') }, { value: 'manyRight', label: translate('many right') }]}
+                />
               )}
             </ul>
           </div>

@@ -3,14 +3,17 @@ import { call, put, takeEvery, takeLatest, actionChannel } from 'redux-saga/effe
 import axios from 'axios';
 import config from '../../config/config.api';
 import _ from 'lodash';
+import { yellow } from 'ansi-colors';
 
 // Actions
 const actions = {
   getAticles: createAction('GET_ATICLES'),
   selectArticle: createAction('SELECT_ARTICLE', (articleId) => {return { articleId }}),
+  selectRemoteArticle: createAction('SELECT_REMOTE_ARTICLE', (articleId) => { return { articleId }}),
   changeArticleData: createAction('CHANGE_ARTICLE_DATA', (fieldName, value) => { return { fieldName, value }}),
   addNewArticle: createAction('ADD_NEW_ARTICLE', (article) => {return { article }}),
-  saveArticle: createAction('SAVE_ARTICLE', (article) => { return { article }})
+  saveArticle: createAction('SAVE_ARTICLE', (article) => { return { article }}),
+  getArticleNames: createAction('GET_ARTICLE_NAMES')
 };
 
 // Sagas
@@ -47,10 +50,34 @@ function* sagaSaveArticle(action){
   }
 }
 
+function* sagaSelectRemoteArticle(action){
+  yield put({ type: 'SELECT_REMOTE_ARTICLE_STARTED' });
+  try{
+    let result = yield axios.get(`${config.baseUrl}article`, { params: { articleId: action.payload.articleId }});
+    yield put({ type: 'SELECT_REMOTE_ARTICLE_SUCCEEDED', payload: { article: result.data }});
+  }catch(error){
+    console.log(error);
+    yield put({ type: 'SELECT_REMOTE_ARTICLE_ERROR' });
+  }
+}
+
+function* sagaGetArticleNames(action){
+  yield put({ type: 'GET_ARTICLE_NAMES_STARTED' });
+  try{
+    let result = yield axios.get(`${config.baseUrl}articles/names`);
+    yield put({ type: 'GET_ARTICLE_NAMES_SUCCEEDED', payload: { articleNames: result.data }});
+  }catch(error){
+    console.log(error);
+    yield put({ type: 'GET_ARTICLE_NAMES_ERROR' });
+  }
+}
+
 function* rootSaga(){
   yield takeEvery('GET_ATICLES', sagaGetAticles),
   yield takeEvery('ADD_NEW_ARTICLE', sagaAddNewArticle),
-  yield takeEvery('SAVE_ARTICLE', sagaSaveArticle)
+  yield takeEvery('SAVE_ARTICLE', sagaSaveArticle),
+  yield takeEvery('SELECT_REMOTE_ARTICLE', sagaSelectRemoteArticle),
+  yield takeEvery('GET_ARTICLE_NAMES', sagaGetArticleNames)
 }
 
 // Reducers
@@ -75,7 +102,13 @@ const reducers = handleActions({
     let articles = state.articles.slice();
     articles.push(action.payload.newArticle);
     return Object.assign({}, state, { articles, selectedArticle: action.payload.newArticle });
+  },
+  'SELECT_REMOTE_ARTICLE_SUCCEEDED': (state, action) => {
+    return Object.assign({}, state, { selectedArticle: action.payload.article });
+  },
+  'GET_ARTICLE_NAMES_SUCCEEDED': (state, action) => {
+    return Object.assign({}, state, { articleNames: action.payload.articleNames });
   }
-}, { articles: [], selectedArticle: {}});
+}, { articles: [], articleNames: [], selectedArticle: {}});
 
 export default { actions, reducers, rootSaga: rootSaga };
