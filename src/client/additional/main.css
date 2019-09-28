@@ -1,4 +1,18 @@
-.enter-form{
+.enter-form {
   display: flex;
   justify-content: center;
+}
+
+.answer-container {
+  display: flex;
+  flex: 1;
+}
+
+.answer-text {
+  flex: 1;
+}
+
+.answer-checkbox {
+  align-items: center;
+  display: flex;
 }
