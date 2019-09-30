@@ -51,7 +51,7 @@ class ArticleForm extends Component{
       <div className="mr-3">
         <p>{translate('article form')}</p>
         <div>
-          <button onClick={this.onSaveArticle} type="button" className="btn btn-light save-button">{translate('save')}</button>
+          <button onClick={this.onSaveArticle} type="button" className="btn btn-secondary save-button">{translate('save')}</button>
         </div>
         <label>{translate('name')}</label>
         <input onChange={(event) => this.onChangeArticleData('name', event.target.value)} type="text" className="form-control" value={this.props.selectedArticle.name || ""}/>
@@ -81,4 +81,4 @@ function mapStateToProps(state){
   }
 }
 
-export default connect(mapStateToProps, Object.assign({}, articleActions))(ArticleForm);
+export default connect(mapStateToProps, articleActions)(ArticleForm);

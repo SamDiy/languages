@@ -54,7 +54,7 @@ router.put('/api/article', async function(req, res){
 router.delete('/api/article', async function(req, res){
   const db = getDB();
   let { articleId } = req.query;
-  await db.collection('locale').remove({ _id: db.ObjectId(articleId) }, { justOne: true });
+  await db.collection('article').remove({ _id: db.ObjectId(articleId) }, { justOne: true });
   res.setHeader('Content-Type', 'application/json');
   res.send(JSON.stringify({ ok: true }));
 });

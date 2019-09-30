@@ -13,7 +13,8 @@ const actions = {
   selectTest: createAction('SELECT_TEST', (test) => { return { test }}),
   changeSelectedTestData: createAction('CHANGE_SELECTED_TEST_DATA', (name, value) => { return { name, value }}),
   addNewTest: createAction('ADD_NEW_TEST', (test) => { return { test }}),
-  saveTest: createAction('SAVE_TEST', (test) => { return { test }})
+  saveTest: createAction('SAVE_TEST', (test) => { return { test }}),
+  deleteTest: createAction('DELETE_TEST', (testId) => { return { testId }})
 };
 
 // Sagas
@@ -54,7 +55,7 @@ function* sagaAddNewTest(action) {
   yield put({ type: 'ADD_NEW_TEST_STARTED' });
   try{
     let result = yield axios.post(`${config.baseUrl}test`, action.payload.test);
-    yield put({ type: 'ADD_NEW_TEST_SUCCEEDED'});
+    yield put({ type: 'ADD_NEW_TEST_SUCCEEDED', payload: { test: result.data }});
   }catch(error){
     console.log(error);
     yield put({ type: 'ADD_NEW_TEST_FAILED' });
@@ -64,11 +65,25 @@ function* sagaAddNewTest(action) {
 function* sagaSaveTest(action) {
   yield put({ type: 'SAVE_TEST_STARTED' });
   try{
-    let result = yield axios.put(`${config.baseUrl}test`, action.payload.test, { params: { testId: action.payload.test._id }})
+    let result = yield axios.put(`${config.baseUrl}test`, action.payload.test, { params: { testId: action.payload.test._id }});
     yield put({ type: 'SAVE_TEST_SUCCEEDED'});
   }catch(error){
     console.log(error);
     yield put({ type: 'SAVE_TEST_FAILED' });
+  }
+}
+
+function* sagaDeleteTest(action) {
+  yield put({ type: 'DELETE_TEST_STARTED' });
+  try{
+    let result = yield axios.delete(`${config.baseUrl}test`, { params: { testId: action.payload.testId }});
+    if(!result.data.ok){
+      throw new Error('Test have not been deleted');
+    }
+    yield put({ type: 'DELETE_TEST_SUCCEEDED', payload: { testId: action.payload.testId }});
+  }catch(error){
+    console.log(error);
+    yield put({ type: 'DELETE_TEST_FAILED' });
   }
 }
 
@@ -77,7 +92,8 @@ function* rootSaga(){
   yield takeEvery('GET_TEST_NAMES', sagaGetTestNames),
   yield takeEvery('GET_REMOTE_TEST', sagaGetRemoteTest),
   yield takeEvery('ADD_NEW_TEST', sagaAddNewTest),
-  yield takeEvery('SAVE_TEST', sagaSaveTest)
+  yield takeEvery('SAVE_TEST', sagaSaveTest),
+  yield takeEvery('DELETE_TEST', sagaDeleteTest)
 }
 
 // Reducers
@@ -98,6 +114,15 @@ const reducers = handleActions({
     let selectedTest = _.cloneDeep(state.selectedTest);
     _.set(selectedTest, action.payload.name, action.payload.value);
     return Object.assign({}, state, { selectedTest });
+  },
+  'DELETE_TEST_SUCCEEDED': (state, action) => {
+    let testNames = _.filter(state.testNames, (testName) => testName._id != action.payload.testId);
+    return Object.assign({}, state, { testNames });
+  },
+  'ADD_NEW_TEST_SUCCEEDED': (state, action) => {
+    let testNames = state.testNames.slice();
+    testNames.push({ _id: action.payload.test._id, name: action.payload.test.name });
+    return Object.assign({}, state, { testNames });
   }
 },{ tests: [], testNames: [], selectedTest: {} });
 

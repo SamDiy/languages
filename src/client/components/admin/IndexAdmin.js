@@ -22,16 +22,21 @@ class IndexAdmin extends Component {
     this.props.getUsers();
   }
 
+  onLogOut(){
+    this.props.userLogOut();
+  }
+
   render(){
     return(
-      <div>
+      <div className="admin-panel">
         <Redirect from="/admin" to="/admin/users"/>
-        <nav className="navbar navbar-light bg-light">
+        <nav className="navbar navbar-light admin-navbar">
           <Link className="nav-link" to='/admin/users'>{translate('users')}</Link>
           <Link className="nav-link" to='/admin/articles'>{translate('articles')}</Link>
           <Link className="nav-link" to='/admin/tests'>{translate('tests')}</Link>
           <Link className="nav-link" to='/admin/locale'>{translate('locales')}</Link>
-          <Link className="nav-link" to='/'>{translate('web')}</Link>
+          <Link className="nav-link" to='/web'>{translate('web')}</Link>
+          <button onClick={() => this.onLogOut()} type="button" className="btn btn-link">{translate('log out')}</button>
         </nav>
         <div>
           <Route path="/admin/users" component={UserList} />

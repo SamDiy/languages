@@ -13,7 +13,8 @@ const actions = {
   changeArticleData: createAction('CHANGE_ARTICLE_DATA', (fieldName, value) => { return { fieldName, value }}),
   addNewArticle: createAction('ADD_NEW_ARTICLE', (article) => {return { article }}),
   saveArticle: createAction('SAVE_ARTICLE', (article) => { return { article }}),
-  getArticleNames: createAction('GET_ARTICLE_NAMES')
+  getArticleNames: createAction('GET_ARTICLE_NAMES'),
+  deleteArticle: createAction('DELETE_ARTICLE', (articleId) => { return { articleId }})
 };
 
 // Sagas
@@ -72,12 +73,27 @@ function* sagaGetArticleNames(action){
   }
 }
 
+function* sagaDeleteArticle(action){
+  yield put({ type: 'DELETE_ARTICLE_STARTED' });
+  try{
+    let result = yield axios.delete(`${config.baseUrl}article`, { params: { articleId: action.payload.articleId }});
+    if(!result.data.ok){
+      throw new Error('Article have not been deleted');
+    }
+    yield put({ type: 'DELETE_ARTICLE_SUCCEEDED', payload: { articleId: action.payload.articleId }});
+  }catch(error){
+    console.log(error);
+    yield put({ type: 'DELETE_ARTICLE_ERROR' });
+  }
+}
+
 function* rootSaga(){
   yield takeEvery('GET_ATICLES', sagaGetAticles),
   yield takeEvery('ADD_NEW_ARTICLE', sagaAddNewArticle),
   yield takeEvery('SAVE_ARTICLE', sagaSaveArticle),
   yield takeEvery('SELECT_REMOTE_ARTICLE', sagaSelectRemoteArticle),
-  yield takeEvery('GET_ARTICLE_NAMES', sagaGetArticleNames)
+  yield takeEvery('GET_ARTICLE_NAMES', sagaGetArticleNames),
+  yield takeEvery('DELETE_ARTICLE', sagaDeleteArticle)
 }
 
 // Reducers
@@ -99,15 +115,19 @@ const reducers = handleActions({
     return Object.assign({}, state, { selectedArticle: article });
   },
   'ADD_NEW_ARTICLE_SUCCEEDED': (state, action) => {
-    let articles = state.articles.slice();
-    articles.push(action.payload.newArticle);
-    return Object.assign({}, state, { articles, selectedArticle: action.payload.newArticle });
+    let articleNames = state.articleNames.slice();
+    articleNames.push({ _id: action.payload.newArticle._id, name: action.payload.newArticle.name });
+    return Object.assign({}, state, { articleNames, selectedArticle: action.payload.newArticle });
   },
   'SELECT_REMOTE_ARTICLE_SUCCEEDED': (state, action) => {
     return Object.assign({}, state, { selectedArticle: action.payload.article });
   },
   'GET_ARTICLE_NAMES_SUCCEEDED': (state, action) => {
     return Object.assign({}, state, { articleNames: action.payload.articleNames });
+  },
+  'DELETE_ARTICLE_SUCCEEDED': (state, action) => {
+    let articleNames = _.filter(state.articleNames, (articleName) => articleName._id != action.payload.articleId);
+    return Object.assign({}, state, { articleNames });
   }
 }, { articles: [], articleNames: [], selectedArticle: {}});
 

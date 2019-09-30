@@ -22,7 +22,9 @@ class TestList extends Component {
   }
 
   onDeleteTest(testId){
-    
+    if(confirm(translate('do you want to delete it'))){
+      this.props.deleteTest(testId);
+    }
   }
 
   onAddNewTest(){
@@ -36,7 +38,7 @@ class TestList extends Component {
           <div className="col-3">
             <p className="ml-2">{translate('test list')}</p>
             <div>
-              <button onClick={() => this.onAddNewTest()} type="button" className="ml-2 btn btn-light">{translate('add new')}</button>
+              <button onClick={() => this.onAddNewTest()} type="button" className="ml-2 btn btn-secondary">{translate('add new')}</button>
             </div>
             <ul>
               {this.props.testNames.map((test) => 
@@ -64,4 +66,4 @@ function mapStateToProps(state){
   };
 }
 
-export default connect(mapStateToProps, Object.assign({}, testActions))(TestList);
+export default connect(mapStateToProps, testActions)(TestList);

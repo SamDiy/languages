@@ -22,7 +22,7 @@ class UserList extends Component {
   }
 
   onDeleteUser(userId){
-    if(userId){
+    if(userId && confirm(translate('do you want to delete it'))){
       this.props.deleteUser(userId);
     }
   }
@@ -37,7 +37,7 @@ class UserList extends Component {
         <h3 className="ml-2">{translate('users')}</h3>
         <div className="row">
           <div className="col-6">
-          <button onClick={() => this.onAddNewUser()} type="button" className="ml-2 btn btn-light">{translate('add new')}</button>
+          <button onClick={() => this.onAddNewUser()} type="button" className="ml-2 btn btn-secondary">{translate('add new')}</button>
             <ul>
               {this.props.users.map((item, index) =>
                 <li key={index}>
@@ -67,4 +67,4 @@ function mapStateToProps(state){
   }
 }
 
-export default connect(mapStateToProps, Object.assign({}, userActions))(UserList);
+export default connect(mapStateToProps, userActions)(UserList);

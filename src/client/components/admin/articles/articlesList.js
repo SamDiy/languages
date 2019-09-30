@@ -16,6 +16,7 @@ class ArticlesList extends Component{
     props.getArticleNames();
     this.onOpenArticle = this.onOpenArticle.bind(this);
     this.onAddNewArticle = this.onAddNewArticle.bind(this);
+    this.onDeleteArticle = this.onDeleteArticle.bind(this);
   }
 
   onOpenArticle(articleId){
@@ -26,19 +27,25 @@ class ArticlesList extends Component{
     this.props.selectArticle();
   }
 
+  onDeleteArticle(articleId){
+    if(confirm(translate('do you want to delete it'))){
+      this.props.deleteArticle(articleId);
+    }
+  }
+
   render(){
     return(
       <div>
         <h3 className="ml-2">{translate('articles')}</h3>
         <div className="row">
             <div className="col-4">
-              <button onClick={() => this.onAddNewArticle()} type="button" className="ml-2 btn btn-light">{translate('add new article')}</button>
+              <button onClick={() => this.onAddNewArticle()} type="button" className="ml-2 btn btn-secondary">{translate('add new article')}</button>
               <ul>
                 {this.props.articleNames.map((article) =>
                   <li key={article._id}>
                     <span>{article.name}</span>
                     <button onClick={() => this.onOpenArticle(article._id)} type="button" className="btn btn-link">{translate('open')}</button>
-                    <button type="button" className="btn btn-link">{translate('delete')}</button>
+                    <button onClick={() => this.onDeleteArticle(article._id)} type="button" className="btn btn-link">{translate('delete')}</button>
                   </li>
                 )}
               </ul>
@@ -59,4 +66,4 @@ function mapStateToProps(state){
   }
 }
 
-export default connect(mapStateToProps, Object.assign({}, articleActions))(ArticlesList);
+export default connect(mapStateToProps, articleActions)(ArticlesList);

@@ -71,13 +71,13 @@ class TestForm extends Component {
     return(
       <div className="mt-2 mr-3">
         <div>
-          <button onClick={this.onSaveTest} type="button" className="btn btn-light save-button">{translate('save')}</button>
+          <button onClick={this.onSaveTest} type="button" className="btn btn-secondary save-button">{translate('save')}</button>
         </div>
         <div>
           <div className="form-group">
             <label htmlFor="test-name">{translate('test name')}</label>
             <input onChange={(event) => this.onChangeData('name', event.target.value)} ref="testName" type="text" className="form-control mb-2" id="test-name" value={this.props.selectedTest.name || ""} placeholder={translate('test name')} />
-            <button onClick={() => this.onAddNewQuestion()} type="button" className="btn btn-light save-button mb-2">{translate('add question')}</button>
+            <button onClick={() => this.onAddNewQuestion()} type="button" className="btn btn-secondary save-button mb-2">{translate('add question')}</button>
             <ul>
               {_.map(this.props.selectedTest.questions, (question, questionIndex) =>
                 <TestQuestion 
@@ -106,4 +106,4 @@ function mapStateToProps(state){
   }
 }
 
-export default connect(mapStateToProps, Object.assign({}, testActions))(TestForm);
+export default connect(mapStateToProps, testActions)(TestForm);

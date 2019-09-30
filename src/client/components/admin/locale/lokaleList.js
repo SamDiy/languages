@@ -70,10 +70,10 @@ class lokaleList extends Component{
       <div>
         <div className="row ml-2">
         <div className="col-12">
-          <button className="m-1 btn btn-light" onClick={this.addNewRow}>{translate('add new')}</button>
-          <button onClick={this.saveLocale} className="m-1 btn btn-light">{translate('save')}</button>
+          <button className="m-1 btn btn-secondary" onClick={this.addNewRow}>{translate('add new')}</button>
+          <button onClick={this.saveLocale} className="m-1 btn btn-secondary">{translate('save')}</button>
           <div className="btn-group">
-            <button type="button" className="dropdown-toggle btn btn-light" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+            <button type="button" className="dropdown-toggle btn btn-secondary" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
               {this.props.localeName}
             </button>
             <div className="dropdown-menu">
@@ -119,4 +119,4 @@ function mapStateToProps(state){
   }
 }
 
-export default connect(mapStateToProps, Object.assign({}, localeActions))(lokaleList);
+export default connect(mapStateToProps, localeActions)(lokaleList);

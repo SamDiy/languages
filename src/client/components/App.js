@@ -44,14 +44,14 @@ class App extends Component {
   render(){
     initTranslate(this.props.locale);
     return(
-      <div>
-        <button onClick={() => this.onLogOut()} type="button" className="btn btn-link">Log out</button>
-        <ul>
+      <div id="main-container">
+        {/* <button onClick={() => this.onLogOut()} type="button" className="btn btn-link">Log out</button> */}
+        {/* <ul>
           <li><Link to='/web'>{translate('web')}</Link></li>
           <li><Link to='/admin'>{translate('admin')}</Link></li>
           <li><Link to='/signIn'>{translate('starting page')}</Link></li>
-        </ul>
-        <div>
+        </ul> */}
+        <div className="web-page">
           <Route path="/web" component={IndexWeb} />
           <Route path="/admin" component={IndexAdmin} />
           <Route exact path="/signIn" component={StartingPage}/>        

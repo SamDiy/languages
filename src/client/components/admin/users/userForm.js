@@ -43,7 +43,7 @@ class UserForm extends Component {
       <div>
         <p>{translate('user form')}</p>
         <div>
-          <button onClick={this.onSaveUser} type="button" className="btn btn-light save-button">{translate('save')}</button>
+          <button onClick={this.onSaveUser} type="button" className="btn btn-secondary save-button">{translate('save')}</button>
         </div>
         <label className="mt-1">{translate('user name')}</label>
         <input onChange={(event)=>this.onChangeUserData('name', event.target.value)} type="text" className="form-control" value={this.props.selectedUser.name || ""}></input>
@@ -62,4 +62,4 @@ function mapStateToProps(state){
   }
 }
 
-export default connect(mapStateToProps, Object.assign({}, userActions))(UserForm);
+export default connect(mapStateToProps, userActions)(UserForm);
