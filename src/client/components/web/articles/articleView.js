@@ -3,6 +3,8 @@ import _ from 'lodash';
 import { translate } from '../../../lib/translater';
 import moment from 'moment';
 
+import ArticleComment from './articleComment';
+
 class ArticleView extends Component {
 
   constructor(props) {
@@ -12,6 +14,7 @@ class ArticleView extends Component {
   }
 
   onSendNewComment(){
+    this.setState({ newCommentText: "" });
     this.props.onSendNewComment({ text: this.state.newCommentText, date: moment(), author: window.localStorage.getItem('userToken') });
   }
 
@@ -44,17 +47,7 @@ class ArticleView extends Component {
           <div>
             <ul>
               { _.map(this.props.selectedArticle.comments, (comment, index) => 
-                <li key={index}>
-                  <div>
-                    <div className="comment-text">
-                      <span>{comment.text}</span>
-                    </div>
-                    <div className="comment-sign">
-                      <span>{comment.authorName}</span>
-                      <span>{comment.data}</span>
-                    </div>
-                  </div>
-                </li>
+                <ArticleComment key={index} user={this.props.user} comment={comment} index={index}/>
               )}
             </ul>
           </div>

@@ -67,9 +67,14 @@ router.put('/api/article/new_coment', async function(req, res){
   let user = jwt.verify(comment.author, config.jwtKey);
   let { articleId } = req.query;
   let article = await db.collection('article').findOne({ _id: db.ObjectId(articleId) });
-  article.comments.push( Object.assign({}, _.omit(comment, 'author'), { authorName: user.name, authorId: user._id }));
+  let maxId = _.get(_.maxBy(article.comments, 'id'), 'id');
+  if (!maxId)
+    maxId = 0;
+  comment = Object.assign({}, _.omit(comment, 'author'), { id: maxId + 1, authorName: user.name, authorId: db.ObjectId(user._id) });
+  article.comments.push(comment);
+  await db.collection('article').save(article);
   res.setHeader('Content-Type', 'application/json');
-  res.send(JSON.stringify({ ok: true }));
+  res.send(JSON.stringify(comment));
 });
 
 module.exports = router;

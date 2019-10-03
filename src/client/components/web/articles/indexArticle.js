@@ -7,6 +7,7 @@ const articleActions = articlesModule.actions;
 
 import ArticleList from './articleList';
 import ArticleView from './articleView';
+import moment from 'moment';
 
 class IndexArticle extends Component {
 
@@ -15,6 +16,14 @@ class IndexArticle extends Component {
     props.getArticleNames();
     this.onSelectArticle = this.onSelectArticle.bind(this);
     this.onSendNewComment = this.onSendNewComment.bind(this);
+    this.componentDidUpdate = this.componentDidUpdate.bind(this);
+    moment.lang(props.localeName || 'en');
+  }
+
+  componentDidUpdate(prevProps) {
+    if(prevProps.localeName != this.props.localeName){
+      moment.lang(this.props.localeName || 'en');
+    }
   }
 
   onSelectArticle(articleId) {
@@ -39,7 +48,7 @@ class IndexArticle extends Component {
           { _.isEmpty(this.props.selectedArticle) ? 
             <ArticleList onSelectArticle={this.onSelectArticle} articleNames={this.props.articleNames}/>
             :
-            <ArticleView onSendNewComment={this.onSendNewComment} onSelectArticle={this.onSelectArticle} selectedArticle={this.props.selectedArticle}/>  
+            <ArticleView user={this.props.user} onSendNewComment={this.onSendNewComment} onSelectArticle={this.onSelectArticle} selectedArticle={this.props.selectedArticle}/>  
           }
         </div>        
       </div>
@@ -49,8 +58,10 @@ class IndexArticle extends Component {
 
 function mapStateToProps(state){
   return{
-    articleNames: state.articles.articleNames || [],
-    selectedArticle: state.articles.selectedArticle || {}
+    localeName: state.locale.localeName,
+    articleNames: state.articles.articleNames,
+    selectedArticle: state.articles.selectedArticle,
+    user: state.users.currentUser
   }
 }
 

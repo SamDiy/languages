@@ -92,7 +92,7 @@ function* sagaAddNewComment(action){
   yield put({ type: 'ADD_NEW_COMMENT_STARTED' });
   try{
     let result = yield axios.put(`${config.baseUrl}article/new_coment`, action.payload.newComment, { params: { articleId: action.payload.articleId }});
-    yield put({ type: 'ADD_NEW_COMMENT_SUCCEEDED' });
+    yield put({ type: 'ADD_NEW_COMMENT_SUCCEEDED', payload: { comment: result.data, articleId: action.payload.articleId }});
   }catch(error){
     console.log(error);
     yield put({ type: 'ADD_NEW_COMMENT_ERROR' });
@@ -141,6 +141,18 @@ const reducers = handleActions({
   'DELETE_ARTICLE_SUCCEEDED': (state, action) => {
     let articleNames = _.filter(state.articleNames, (articleName) => articleName._id != action.payload.articleId);
     return Object.assign({}, state, { articleNames });
+  },
+  'ADD_NEW_COMMENT_SUCCEEDED': (state, action) => {
+    if (state.selectedArticle._id != action.payload.articleId){
+      return state;
+    }
+    let comments = []
+    if(_.isArray(state.selectedArticle.comments)){
+      comments = state.selectedArticle.comments.slice();
+    }
+    comments.push(action.payload.comment);
+    return Object.assign({}, state, { selectedArticle: Object.assign({}, state.selectedArticle, { comments })});   
+    
   }
 }, { articles: [], articleNames: [], selectedArticle: {}});
 
