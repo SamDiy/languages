@@ -14,7 +14,8 @@ const actions = {
   addNewArticle: createAction('ADD_NEW_ARTICLE', (article) => {return { article }}),
   saveArticle: createAction('SAVE_ARTICLE', (article) => { return { article }}),
   getArticleNames: createAction('GET_ARTICLE_NAMES'),
-  deleteArticle: createAction('DELETE_ARTICLE', (articleId) => { return { articleId }})
+  deleteArticle: createAction('DELETE_ARTICLE', (articleId) => { return { articleId }}),
+  addNewComment: createAction('ADD_NEW_COMMENT', (articleId, newComment) => { return { articleId, newComment }})
 };
 
 // Sagas
@@ -87,13 +88,25 @@ function* sagaDeleteArticle(action){
   }
 }
 
+function* sagaAddNewComment(action){
+  yield put({ type: 'ADD_NEW_COMMENT_STARTED' });
+  try{
+    let result = yield axios.put(`${config.baseUrl}article/new_coment`, action.payload.newComment, { params: { articleId: action.payload.articleId }});
+    yield put({ type: 'ADD_NEW_COMMENT_SUCCEEDED' });
+  }catch(error){
+    console.log(error);
+    yield put({ type: 'ADD_NEW_COMMENT_ERROR' });
+  }
+}
+
 function* rootSaga(){
   yield takeEvery('GET_ATICLES', sagaGetAticles),
   yield takeEvery('ADD_NEW_ARTICLE', sagaAddNewArticle),
   yield takeEvery('SAVE_ARTICLE', sagaSaveArticle),
   yield takeEvery('SELECT_REMOTE_ARTICLE', sagaSelectRemoteArticle),
   yield takeEvery('GET_ARTICLE_NAMES', sagaGetArticleNames),
-  yield takeEvery('DELETE_ARTICLE', sagaDeleteArticle)
+  yield takeEvery('DELETE_ARTICLE', sagaDeleteArticle),
+  yield takeEvery('ADD_NEW_COMMENT', sagaAddNewComment)
 }
 
 // Reducers

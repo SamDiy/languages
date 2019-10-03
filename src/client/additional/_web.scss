@@ -1,0 +1,39 @@
+.web-panel {
+  height: 100%;
+  background-color: #f8f9fa;
+}
+
+.web-navbar {
+  background-color: #e3e4e6;
+}
+
+.article-list-element {
+  cursor: pointer;
+  text-align: center;
+  background-color: #fff;
+  list-style-type: none;
+  border: solid 1px #c7c7c7;
+  margin: 5px 0;
+  border-radius: 5px;
+  box-shadow: 5px 3px 3px rgba(0,0,0,0.1);
+}
+
+.article-title {
+  text-align: center;
+}
+
+.article-text {
+  background-color: #fff;
+  list-style-type: none;
+  border: solid 1px #c7c7c7;
+  margin: 5px 0;
+  border-radius: 5px;
+  box-shadow: 2px 1px 1px rgba(0,0,0,0.1);
+  min-height: 25vh;
+}
+
+.comment-sign {
+  justify-content: space-between;
+  display: flex;
+  width: 50%;
+}

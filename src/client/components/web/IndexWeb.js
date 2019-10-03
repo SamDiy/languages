@@ -10,6 +10,7 @@ const lacaleActions = localeModule.actions;
 
 import IndexArticle from './articles/indexArticle';
 import IndexTest from './tests/indexTest';
+import _ from 'lodash';
 
 class IndexWeb extends Component {
 
@@ -31,8 +32,8 @@ class IndexWeb extends Component {
               {this.props.localeName}
             </button>
             <div className="dropdown-menu">
-              {lokaleKeys.map((item) =>
-                <a onClick={(e)=>this.onChangeLanguage(item)} className="dropdown-item">{item}</a> 
+              {_.map(lokaleKeys, (item, index) =>
+                <a key={index} onClick={(e)=>this.onChangeLanguage(item)} className="dropdown-item">{item}</a> 
               )}
             </div>
           </div>

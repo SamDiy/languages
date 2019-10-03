@@ -55,6 +55,8 @@ class ArticleForm extends Component{
         </div>
         <label>{translate('name')}</label>
         <input onChange={(event) => this.onChangeArticleData('name', event.target.value)} type="text" className="form-control" value={this.props.selectedArticle.name || ""}/>
+        <label>{translate('description')}</label>
+        <textarea onChange={(event) => this.onChangeArticleData('description', event.target.value)} rows="3" className="form-control" value={this.props.selectedArticle.description || ""}/>
         <label>{translate('text')}</label>
         <textarea onChange={(event) => this.onChangeArticleData('text', event.target.value)} rows="15" className="form-control" value={this.props.selectedArticle.text || ""}/>
         {!_.isEmpty(this.props.selectedArticle.date) &&
