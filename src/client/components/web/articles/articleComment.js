@@ -7,16 +7,6 @@ class ArticleComment extends Component {
 
   constructor(props){
     super(props);
-    this.onEditComment = this.onEditComment.bind(this);
-    this.onDeleteComment = this.onDeleteComment.bind(this);
-  }
-
-  onEditComment(){
-
-  }
-
-  onDeleteComment(){
-
   }
 
   render(){
@@ -28,8 +18,8 @@ class ArticleComment extends Component {
             <span>{comment.text}</span>
             {_.get(this.props.user, '_id') == comment.authorId && 
               <span>
-                <button type="button" className="btn btn-link">{translate('edit')}</button>
-                <button type="button" className="btn btn-link">{translate('delete')}</button>
+                <button onClick={() => this.props.onEditComment(comment.id, comment.text)} type="button" className="btn btn-link">{translate('edit')}</button>
+                <button onClick={() => this.props.onDeleteComment(comment.id)} type="button" className="btn btn-link">{translate('delete')}</button>
               </span>
             }
           </div>

@@ -1,6 +1,8 @@
 const express = require('express');
 const router = express.Router();
 const _ = require('lodash');
+const config = require('../config/config.api');
+const jwt = require('jsonwebtoken');
 
 const { getDB } = require('../db/index');
 
@@ -20,10 +22,19 @@ router.get('/api/singIn', async function(req, res){
   let user = await db.collection('user').findOne({ $or: [{ name: userLogin }, { email: userLogin }]});
   res.setHeader('Content-Type', 'application/json');
   if(user && _.isEqual(user.password, userPassword)){
-    res.send(JSON.stringify(_.omit(user, 'password')));
+    user = _.omit(user, 'password')
+    let userToken = jwt.sign(user, config.jwtKey);
+    user.userToken = userToken;
+    res.send(JSON.stringify(user));
   }else{
     res.status(500).send(JSON.stringify({ ok: false, message: "User was not found or password is wrong" }));
   }  
+});
+
+router.get('/api/current_user', async function(req, res){
+  let currentUser = jwt.verify(req.query.userToken, config.jwtKey);
+  res.setHeader('Content-Type', 'application/json');
+  res.send(JSON.stringify(currentUser));
 });
 
 router.get('/api/user', async function(req, res){

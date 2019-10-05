@@ -77,6 +77,8 @@ class TestForm extends Component {
           <div className="form-group">
             <label htmlFor="test-name">{translate('test name')}</label>
             <input onChange={(event) => this.onChangeData('name', event.target.value)} ref="testName" type="text" className="form-control mb-2" id="test-name" value={this.props.selectedTest.name || ""} placeholder={translate('test name')} />
+            <label htmlFor="test-name">{translate('test description')}</label>
+            <textarea rows="3" onChange={(event) => this.onChangeData('description', event.target.value)} ref="testDescription" type="text" className="form-control mb-2" id="test-description" value={this.props.selectedTest.description || ""} placeholder={translate('test description')} />
             <button onClick={() => this.onAddNewQuestion()} type="button" className="btn btn-secondary save-button mb-2">{translate('add question')}</button>
             <ul>
               {_.map(this.props.selectedTest.questions, (question, questionIndex) =>

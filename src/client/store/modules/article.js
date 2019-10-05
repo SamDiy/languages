@@ -15,7 +15,9 @@ const actions = {
   saveArticle: createAction('SAVE_ARTICLE', (article) => { return { article }}),
   getArticleNames: createAction('GET_ARTICLE_NAMES'),
   deleteArticle: createAction('DELETE_ARTICLE', (articleId) => { return { articleId }}),
-  addNewComment: createAction('ADD_NEW_COMMENT', (articleId, newComment) => { return { articleId, newComment }})
+  addNewComment: createAction('ADD_NEW_COMMENT', (articleId, newComment) => { return { articleId, newComment }}),
+  editComment: createAction('EDIT_COMMENT', (articleId, comment) => { return { articleId, comment }}),
+  deleteComment: createAction('DELETE_COMMENT', (articleId, commentId) => { return { articleId, commentId }})
 };
 
 // Sagas
@@ -99,6 +101,29 @@ function* sagaAddNewComment(action){
   }
 }
 
+function* sagaEditComment(action){
+  yield put({ type: 'EDIT_COMMENT_STARTED' });
+  try{
+    let result = yield axios.put(`${config.baseUrl}article/coment`, _.omit(action.payload.comment, 'authorId', 'authorName', 'date'), { params: { articleId: action.payload.articleId }});
+    yield put({ type: 'EDIT_COMMENT_SUCCEEDED', payload: { comment: result.data, articleId: action.payload.articleId }});
+  }catch(error){
+    console.log(error);
+    yield put({ type: 'EDIT_COMMENT_ERROR' });
+  }
+}
+
+function* sagaDeleteComment(action){
+  yield put({ type: 'DELETE_COMMENT_STARTED' });
+  try{
+    let result = yield axios.delete(`${config.baseUrl}article/coment`, { params: { articleId: action.payload.articleId, commentId: action.payload.commentId }});
+    if(result.data.ok)
+      yield put({ type: 'DELETE_COMMENT_SUCCEEDED', payload: { articleId: action.payload.articleId, commentId: action.payload.commentId }});
+  }catch(error){
+    console.log(error);
+    yield put({ type: 'DELETE_COMMENT_ERROR' });
+  }
+}
+
 function* rootSaga(){
   yield takeEvery('GET_ATICLES', sagaGetAticles),
   yield takeEvery('ADD_NEW_ARTICLE', sagaAddNewArticle),
@@ -106,7 +131,9 @@ function* rootSaga(){
   yield takeEvery('SELECT_REMOTE_ARTICLE', sagaSelectRemoteArticle),
   yield takeEvery('GET_ARTICLE_NAMES', sagaGetArticleNames),
   yield takeEvery('DELETE_ARTICLE', sagaDeleteArticle),
-  yield takeEvery('ADD_NEW_COMMENT', sagaAddNewComment)
+  yield takeEvery('ADD_NEW_COMMENT', sagaAddNewComment),
+  yield takeEvery('EDIT_COMMENT', sagaEditComment),
+  yield takeEvery('DELETE_COMMENT', sagaDeleteComment)
 }
 
 // Reducers
@@ -151,8 +178,25 @@ const reducers = handleActions({
       comments = state.selectedArticle.comments.slice();
     }
     comments.push(action.payload.comment);
-    return Object.assign({}, state, { selectedArticle: Object.assign({}, state.selectedArticle, { comments })});   
-    
+    return Object.assign({}, state, { selectedArticle: Object.assign({}, state.selectedArticle, { comments })});    
+  },
+  'EDIT_COMMENT_SUCCEEDED': (state, action) => {
+    if (state.selectedArticle._id != action.payload.articleId){
+      return state;
+    }
+    let article = Object.assign({}, state.selectedArticle);
+    Object.assign(_.find(article.comments, { id: action.payload.comment.id }), action.payload.comment)
+    return Object.assign({}, state, { selectedArticle: article });
+  },
+  'DELETE_COMMENT_SUCCEEDED': (state, action) => {
+    if (state.selectedArticle._id != action.payload.articleId){
+      return state;
+    }
+    let article = Object.assign({}, state.selectedArticle);
+    console.log(article);
+    article = Object.assign({}, article, { comments: _.filter(article.comments, (comment) => comment.id != action.payload.commentId) });
+    console.log(article);
+    return Object.assign({}, state, { selectedArticle: article });
   }
 }, { articles: [], articleNames: [], selectedArticle: {}});
 

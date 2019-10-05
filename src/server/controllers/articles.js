@@ -77,4 +77,25 @@ router.put('/api/article/new_coment', async function(req, res){
   res.send(JSON.stringify(comment));
 });
 
+router.put('/api/article/coment', async function(req, res){
+  const db = getDB();
+  let comment = req.body;
+  let { articleId } = req.query;
+  let article = await db.collection('article').findOne({ _id: db.ObjectId(articleId) });
+  comment = Object.assign(_.find(article.comments, { id: comment.id }), { text: comment.text });
+  await db.collection('article').save(article);
+  res.setHeader('Content-Type', 'application/json');
+  res.send(JSON.stringify(comment)); 
+});
+
+router.delete('/api/article/coment', async function(req, res){
+  const db = getDB();
+  let { articleId, commentId } = req.query;
+  let article = await db.collection('article').findOne({ _id: db.ObjectId(articleId) });
+  article = Object.assign({}, article, { comments: _.filter(article.comments, (comment) => comment.id != commentId) });
+  await db.collection('article').save(article);
+  res.setHeader('Content-Type', 'application/json');
+  res.send(JSON.stringify({ ok: true }));
+});
+
 module.exports = router;

@@ -9,13 +9,35 @@ class ArticleView extends Component {
 
   constructor(props) {
     super(props);
-    this.onSendNewComment = this.onSendNewComment.bind(this);
-    this.state = { newCommentText: "" };
+    this.onSendComment = this.onSendComment.bind(this);
+    this.onEditComment = this.onEditComment.bind(this);
+    this.onCancelEditComment = this.onCancelEditComment.bind(this);
+    this.state = { 
+      newCommentText: "",
+      commentId: undefined
+    };
   }
 
-  onSendNewComment(){
-    this.setState({ newCommentText: "" });
-    this.props.onSendNewComment({ text: this.state.newCommentText, date: moment(), author: window.localStorage.getItem('userToken') });
+  onSendComment(){
+    let articleId = this.props.selectedArticle._id;
+    if(!articleId){
+      return;
+    }
+    if(!this.state.commentId){
+      this.props.addNewComment(articleId, { text: this.state.newCommentText, date: moment(), author: window.localStorage.getItem('userToken') });
+    } else {
+      let comment = Object.assign({}, _.find(this.props.selectedArticle.comments, { id: this.state.commentId }), { text: this.state.newCommentText });
+      this.props.editComment(articleId, comment);
+    }
+    this.setState({ newCommentText: "", commentId: undefined });
+  }
+
+  onCancelEditComment(){
+    this.setState({ newCommentText: "", commentId: undefined });
+  }
+
+  onEditComment(commentId, commentText){
+    this.setState({ newCommentText: commentText, commentId: commentId });
   }
 
   render(){
@@ -41,13 +63,14 @@ class ArticleView extends Component {
               <textarea onChange={(event) => this.setState({ newCommentText: event.target.value })} className="form-control" id="new-comment" rows="3" value={this.state.newCommentText}></textarea>
             </div>
             <div style={{ textAlign: 'end' }}>
-              <button onClick={() => this.onSendNewComment()} type="button" className="btn btn-secondary">{translate('send comment')}</button>
+            <button onClick={() => this.onCancelEditComment()} type="button" className="btn btn-secondary mr-2">{translate('cancel')}</button>
+              <button onClick={() => this.onSendComment()} type="button" className="btn btn-secondary">{translate('send comment')}</button>
             </div>
           </div>
           <div>
             <ul>
               { _.map(this.props.selectedArticle.comments, (comment, index) => 
-                <ArticleComment key={index} user={this.props.user} comment={comment} index={index}/>
+                <ArticleComment onEditComment={this.onEditComment} onDeleteComment={this.props.onDeleteComment} key={index} user={this.props.user} comment={comment} index={index}/>
               )}
             </ul>
           </div>

@@ -13,7 +13,7 @@ router.get('/api/tests', async function(req, res){
 
 router.get('/api/tests/names', async function(req, res){
   const db = getDB();
-  let names = await db.collection('test').find({}, { projection: { name: 1, _id: 1 }}).toArray();
+  let names = await db.collection('test').find({}, { projection: { name: 1, _id: 1, description: 1 }}).toArray();
   res.setHeader('Content-Type', 'application/json');
   res.send(JSON.stringify(names));
 });

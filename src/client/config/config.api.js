@@ -1,4 +1,3 @@
 export default {
-  baseUrl: 'http://localhost:3000/api/',
-  jwtKey: 'samdiy'
+  baseUrl: 'http://localhost:3000/api/'
 }

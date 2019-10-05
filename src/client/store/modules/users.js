@@ -3,7 +3,6 @@ import { call, put, takeEvery, takeLatest, actionChannel } from 'redux-saga/effe
 import axios from 'axios';
 import config from '../../config/config.api';
 import _ from 'lodash';
-import jwt from 'jsonwebtoken';
 
 // Actions
 
@@ -73,9 +72,10 @@ function* sagaUserSignIn(action){
   yield put({ type: 'USER_SIGN_IN_STARTED' });
   try{
     let result = yield axios.get(`${config.baseUrl}singIn`, { params: { userLogin: action.payload.userLogin, userPassword: action.payload.userPassword }});
-    let userToken = jwt.sign(result.data, config.jwtKey);
-    window.localStorage.setItem('userToken', userToken);
-    yield put({ type: 'USER_SIGN_IN_SUCCEEDED', payload: { currentUser: result.data }});
+    let userToken = _.get(result.data, 'userToken');
+    if(userToken)
+      window.localStorage.setItem('userToken', userToken);
+    yield put({ type: 'USER_SIGN_IN_SUCCEEDED', payload: { currentUser: _.omit(result.data, 'userToken') }});
   }catch(error){
     console.log(error);
     yield put({ type: 'USER_SIGN_IN_FAILED' });
@@ -88,13 +88,25 @@ function* sagaUserLogOut(action){
   yield put({ type: 'USER_LOG_OUT_SUCCEEDED' });
 }
 
+function* sagaGetCurrentUser(action){
+  yield put({ type: 'GET_CURREN_TUSER_STARTED' });
+  try{
+    let result = yield axios.get(`${config.baseUrl}current_user`, { params: { userToken: action.payload.userToken }});
+    yield put({ type: 'GET_CURREN_TUSER_SUCCEEDED', payload: { currentUser: result.data }});
+  }catch(error){
+    console.log(error);
+    yield put({ type: 'GET_CURREN_TUSER_FAILED' });
+  }
+}
+
 function* rootSaga(){
   yield takeEvery('FETCH_USERS', sagaFetchUsers),
   yield takeEvery('SAVE_USER', sagaSaveUser),
   yield takeEvery('ADD_NEW_USER', sagaAddNewUser),
   yield takeEvery('DELETE_USER', sagaDeleteUser),
   yield takeEvery('USER_SIGN_IN', sagaUserSignIn),
-  yield takeEvery('USER_LOG_OUT', sagaUserLogOut)
+  yield takeEvery('USER_LOG_OUT', sagaUserLogOut),
+  yield takeEvery('GET_CURREN_TUSER', sagaGetCurrentUser)
 }
 
 // Reducers
@@ -141,9 +153,8 @@ const reducers = handleActions({
   'USER_LOG_OUT_SUCCEEDED': (state, action) => {
     return Object.assign({}, state, { currentUser: {} });
   },
-  'GET_CURREN_TUSER': (state, action) => {
-    let currentUser = jwt.verify(action.payload.userToken, config.jwtKey);
-    return Object.assign({}, state, { currentUser });
+  'GET_CURREN_TUSER_SUCCEEDED': (state, action) => {    
+    return Object.assign({}, state, { currentUser: action.payload.currentUser });
   }
 }, { users: [], selectedUser: {}, currentUser: {}});
 
