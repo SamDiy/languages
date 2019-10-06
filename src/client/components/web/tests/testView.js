@@ -47,8 +47,8 @@ class TestView extends Component {
   }
   
   onSendResults(){
-    // if(confirm(translate('do you want to send test results')))
-    //   this.props.sendTestResults(this.props.selectedTest);
+    if(confirm(translate('do you want to finish test')))
+      this.props.sendTestResults(this.props.selectedTest);
   }
 
   render(){

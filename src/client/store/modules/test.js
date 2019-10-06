@@ -91,7 +91,10 @@ function* sagaDeleteTest(action) {
 function* sagaSendTestResults(action) {
   yield put({ type: 'SEND_TEST_RESULTS_STARTED' });
   try{
-    let result = yield axios.post(`${config.baseUrl}test_result`, action.payload.test);
+    let userToken = window.localStorage.getItem('userToken');
+    if(!userToken)
+      throw(new Error('Not user'));
+    let result = yield axios.post(`${config.baseUrl}test_result`, { test: action.payload.test, userToken });
     yield put({ type: 'SEND_TEST_RESULTS_SUCCEEDED' });
   }catch(error){
     console.log(error);

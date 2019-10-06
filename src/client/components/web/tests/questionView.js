@@ -11,18 +11,23 @@ class QuestionView extends Component {
       return(null);
     return(
       <div>
-        <p>{question.text}</p>
+        <div className="question-text-area">
+          <p>{question.text}</p>
+        </div>
+        {
+          question.type == "manyRight" && <p>{translate("you can choose many answers")}</p>
+        }
         <div className="question-answer-area">
-        <ul>
-          { _.map(question.answers, (answer, index) =>
-            <li key={index}>
-              <div className="form-check">
-                <input onChange={(event) => this.props.onCheckAnswer(index, event.target.checked)} checked={answer.checked || false} type="checkbox"/>              
-                <span>{answer.text}</span>
-              </div>
-            </li>
-          )}
-        </ul>
+          <ul>
+            { _.map(question.answers, (answer, index) =>
+              <li key={index}>
+                <div className="form-check">
+                  <input onChange={(event) => this.props.onCheckAnswer(index, event.target.checked)} checked={answer.checked || false} type="checkbox"/>              
+                  <span>{answer.text}</span>
+                </div>
+              </li>
+            )}
+          </ul>
         </div>
         <div className="question-button-area">
           <button onClick={() => this.props.onChengeQuestion(this.props.questionIndex - 1)} className="btn btn-secondary save-button">{translate('previous')}</button>

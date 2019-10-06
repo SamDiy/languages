@@ -1,6 +1,9 @@
 const express = require('express');
 const router = express.Router();
 const _ = require('lodash');
+const config = require('../config/config.api');
+const jwt = require('jsonwebtoken');
+const moment = require('moment');
 
 const { getDB } = require('../db/index');
 
@@ -49,6 +52,28 @@ router.delete('/api/test', async function(req, res){
   const db = getDB();
   let { testId } = req.query;
   await db.collection('test').remove({ _id: db.ObjectId(testId) }, { justOne: true });
+  res.setHeader('Content-Type', 'application/json');
+  res.send(JSON.stringify({ ok: true }));
+});
+
+router.post('/api/test_result', async function(req, res){
+  const db = getDB();
+  let { test, userToken }= req.body;
+  let user = jwt.verify(userToken, config.jwtKey);
+  let mark = 0;
+  let answerPrice = 0;
+  _.forEach(test.questions, (question) => {
+    if (question.type == "manyRight"){      
+      answerPrice = Number(question.price) / (_.filter(question.answers, { right: true }).length || 1);
+    }else {
+      answerPrice = Number(question.price);
+    }    
+    _.forEach(question.answers, (answer) => {
+      if(answer.right && answer.checked)
+        mark += answerPrice;
+    });
+  });
+  await db.collection('testResult').save({ user: db.ObjectId(user._id), userName: user.name, mark, date: moment().format(), test: db.ObjectId(test._id), testName: test.name });
   res.setHeader('Content-Type', 'application/json');
   res.send(JSON.stringify({ ok: true }));
 });

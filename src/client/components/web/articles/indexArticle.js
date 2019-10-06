@@ -29,10 +29,8 @@ class IndexArticle extends Component {
   }
 
   onSelectArticle(articleId) {
-    if(_.isEmpty(articleId)){
-      this.props.selectArticle();
-    } else {
-      this.props.selectRemoteArticle(articleId);
+    if(!_.isEmpty(articleId)){
+      this.props.history.push(`/web/articles/${articleId}`);
     }
   }
 
@@ -45,18 +43,13 @@ class IndexArticle extends Component {
     return(
       <div className="row">
         <div className="col-12">
-          { _.isEmpty(this.props.selectedArticle) ? 
+          <Route exact path="/web/articles" render={() => <ArticleList onSelectArticle={this.onSelectArticle} articleNames={this.props.articleNames}/>} />
+          <Route path="/web/articles/:id" component={ArticleView}/>
+          {/* { _.isEmpty(this.props.selectedArticle) ? 
             <ArticleList onSelectArticle={this.onSelectArticle} articleNames={this.props.articleNames}/>
             :
-            <ArticleView
-              user={this.props.user}
-              addNewComment={this.props.addNewComment}
-              editComment={this.props.editComment}              
-              onSelectArticle={this.onSelectArticle}
-              selectedArticle={this.props.selectedArticle}
-              onDeleteComment={this.onDeleteComment}
-            />  
-          }
+            <ArticleView />  
+          } */}
         </div>        
       </div>
     );
