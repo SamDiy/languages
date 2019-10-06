@@ -9,6 +9,7 @@ import ArticleList from './articleList';
 import ArticleView from './articleView';
 import moment from 'moment';
 import { translate } from '../../../lib/translater';
+import { Route, Link, Redirect } from 'react-router-dom';
 
 class IndexArticle extends Component {
 
@@ -34,13 +35,6 @@ class IndexArticle extends Component {
       this.props.selectRemoteArticle(articleId);
     }
   }
-
-  // onSendNewComment(newComment){
-  //   let articleId = this.props.selectedArticle._id;
-  //   if(articleId){
-  //     this.props.addNewComment(articleId, newComment);
-  //   }
-  // }
 
   onDeleteComment(commentId){
     if(this.props.selectedArticle._id && confirm(translate('do you want to delete it')))

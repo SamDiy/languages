@@ -14,7 +14,8 @@ const actions = {
   changeSelectedTestData: createAction('CHANGE_SELECTED_TEST_DATA', (name, value) => { return { name, value }}),
   addNewTest: createAction('ADD_NEW_TEST', (test) => { return { test }}),
   saveTest: createAction('SAVE_TEST', (test) => { return { test }}),
-  deleteTest: createAction('DELETE_TEST', (testId) => { return { testId }})
+  deleteTest: createAction('DELETE_TEST', (testId) => { return { testId }}),
+  sendTestResults: createAction('SEND_TEST_RESULTS', (test) => { return { test }})
 };
 
 // Sagas
@@ -87,13 +88,25 @@ function* sagaDeleteTest(action) {
   }
 }
 
+function* sagaSendTestResults(action) {
+  yield put({ type: 'SEND_TEST_RESULTS_STARTED' });
+  try{
+    let result = yield axios.post(`${config.baseUrl}test_result`, action.payload.test);
+    yield put({ type: 'SEND_TEST_RESULTS_SUCCEEDED' });
+  }catch(error){
+    console.log(error);
+    yield put({ type: 'SEND_TEST_RESULTS_FAILED' });
+  }
+}
+
 function* rootSaga(){
   yield takeEvery('GET_TESTS', sagaGetTests),
   yield takeEvery('GET_TEST_NAMES', sagaGetTestNames),
   yield takeEvery('GET_REMOTE_TEST', sagaGetRemoteTest),
   yield takeEvery('ADD_NEW_TEST', sagaAddNewTest),
   yield takeEvery('SAVE_TEST', sagaSaveTest),
-  yield takeEvery('DELETE_TEST', sagaDeleteTest)
+  yield takeEvery('DELETE_TEST', sagaDeleteTest),
+  yield takeEvery('SEND_TEST_RESULTS', sagaSendTestResults)
 }
 
 // Reducers
