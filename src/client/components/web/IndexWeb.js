@@ -8,6 +8,9 @@ import Select from 'react-select';
 import localeModule from '../../store/modules/locale';
 const lacaleActions = localeModule.actions;
 
+import usersModule from '../../store/modules/users';
+const userActions = usersModule.actions;
+
 import IndexArticle from './articles/indexArticle';
 import IndexTest from './tests/indexTest';
 import _ from 'lodash';
@@ -37,6 +40,7 @@ class IndexWeb extends Component {
               )}
             </div>
           </div>
+          <button onClick={() => this.props.userLogOut()} type="button" className="btn btn-link">{translate('log out')}</button>
         </nav>
         <div className="p-2">
           <Route path="/web/articles" component={IndexArticle} />
@@ -55,4 +59,4 @@ function mapStateToProps(state){
   }
 }
 
-export default connect(mapStateToProps, lacaleActions)(IndexWeb);
+export default connect(mapStateToProps, Object.assign({}, lacaleActions, userActions))(IndexWeb);

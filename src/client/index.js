@@ -12,5 +12,7 @@ import $ from 'jquery';
 import 'bootstrap/dist/js/bootstrap.bundle.min';
 
 import './additional/style.scss';
+import 'react-dates/initialize';
+import 'react-dates/lib/css/_datepicker.css';
 
 ReactDOM.render(<Provider store={store}><Router><App /></Router></Provider>, document.getElementById('root'));

@@ -15,7 +15,8 @@ const actions = {
   addNewTest: createAction('ADD_NEW_TEST', (test) => { return { test }}),
   saveTest: createAction('SAVE_TEST', (test) => { return { test }}),
   deleteTest: createAction('DELETE_TEST', (testId) => { return { testId }}),
-  sendTestResults: createAction('SEND_TEST_RESULTS', (test) => { return { test }})
+  sendTestResults: createAction('SEND_TEST_RESULTS', (test) => { return { test }}),
+  getTestResults: createAction('GET_TEST_RESULTS')
 };
 
 // Sagas
@@ -95,10 +96,24 @@ function* sagaSendTestResults(action) {
     if(!userToken)
       throw(new Error('Not user'));
     let result = yield axios.post(`${config.baseUrl}test_result`, { test: action.payload.test, userToken });
+    if(!result.data.ok){
+      throw new Error('Test have not been send');
+    }
     yield put({ type: 'SEND_TEST_RESULTS_SUCCEEDED' });
   }catch(error){
     console.log(error);
     yield put({ type: 'SEND_TEST_RESULTS_FAILED' });
+  }
+}
+
+function* sagaGetTestResults(action){
+  yield put({ type: 'GET_TEST_RESULTS_STARTED' });
+  try{
+    let result = yield axios.get(`${config.baseUrl}test_result`);
+    yield put({ type: 'GET_TEST_RESULTS_SUCCEEDED', payload: { testResults: result.data }})
+  }catch(error){
+    console.log(error);
+    yield put({ type: 'GET_TEST_RESULTS_FAILED' });
   }
 }
 
@@ -109,7 +124,8 @@ function* rootSaga(){
   yield takeEvery('ADD_NEW_TEST', sagaAddNewTest),
   yield takeEvery('SAVE_TEST', sagaSaveTest),
   yield takeEvery('DELETE_TEST', sagaDeleteTest),
-  yield takeEvery('SEND_TEST_RESULTS', sagaSendTestResults)
+  yield takeEvery('SEND_TEST_RESULTS', sagaSendTestResults),
+  yield takeEvery('GET_TEST_RESULTS', sagaGetTestResults)
 }
 
 // Reducers
@@ -121,10 +137,10 @@ const reducers = handleActions({
     return Object.assign({}, state, { testNames: action.payload.testNames });
   },
   'GET_REMOTE_TEST_SUCCEEDED': (state, action) => {
-    return Object.assign({}, state, { selectedTest: action.payload.test });
+    return Object.assign({}, state, { selectedTest: action.payload.test, testFinished: false });
   },
   'SELECT_TEST': (state, action) => {
-    return Object.assign({}, state, { selectedTest: action.payload.test });
+    return Object.assign({}, state, { selectedTest: action.payload.test, testFinished: false });
   },
   'CHANGE_SELECTED_TEST_DATA': (state, action) => {
     let selectedTest = _.cloneDeep(state.selectedTest);
@@ -139,7 +155,13 @@ const reducers = handleActions({
     let testNames = state.testNames.slice();
     testNames.push({ _id: action.payload.test._id, name: action.payload.test.name });
     return Object.assign({}, state, { testNames });
+  },
+  'GET_TEST_RESULTS_SUCCEEDED': (state, action) => {
+    return Object.assign({}, state, { testResults: action.payload.testResults });
+  },
+  'SEND_TEST_RESULTS_SUCCEEDED': (state, action) => {
+    return Object.assign({}, state, { testFinished: true });
   }
-},{ tests: [], testNames: [], selectedTest: {} });
+},{ tests: [], testNames: [], selectedTest: {}, testResults: [], testFinished: false });
 
 export default { actions, reducers, rootSaga: rootSaga };

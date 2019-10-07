@@ -17,9 +17,17 @@ class TestView extends Component {
     this.onChengeQuestion = this.onChengeQuestion.bind(this);
     this.onCheckAnswer = this.onCheckAnswer.bind(this);
     this.onSendResults = this.onSendResults.bind(this);
+    this.componentDidUpdate = this.componentDidUpdate.bind(this);
     this.state = {
       questionIndex: 0
     };
+  }
+
+  componentDidUpdate(prevProps){
+    if(!prevProps.testFinished && this.props.testFinished){
+      this.props.history.push('/web/tests');
+      this.props.selectTest({});
+    }
   }
 
   onChengeQuestion(newQuestionIndex){
@@ -74,7 +82,8 @@ class TestView extends Component {
 
 function mapStateToProps(state){
   return{
-    selectedTest: state.test.selectedTest
+    selectedTest: state.test.selectedTest,
+    testFinished: state.test.testFinished
   }
 }
 

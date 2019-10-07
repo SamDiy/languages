@@ -11,6 +11,7 @@ import UserList from './users/userList';
 import LocaleList from './locale/lokaleList';
 import ArticlesList from './articles/articlesList';
 import TestsList from './tests/testsList';
+import ResultTable from './testResults/resultTable';
 
 class IndexAdmin extends Component {
 
@@ -35,10 +36,12 @@ class IndexAdmin extends Component {
           <Link className="nav-link" to='/admin/articles'>{translate('articles')}</Link>
           <Link className="nav-link" to='/admin/tests'>{translate('tests')}</Link>
           <Link className="nav-link" to='/admin/locale'>{translate('locales')}</Link>
+          <Link className="nav-link" to='/admin/results'>{translate('results')}</Link>
           <Link className="nav-link" to='/web'>{translate('web')}</Link>
           <button onClick={() => this.onLogOut()} type="button" className="btn btn-link">{translate('log out')}</button>
         </nav>
         <div>
+          <Route path="/admin/results" component={ResultTable} />
           <Route path="/admin/users" component={UserList} />
           <Route path="/admin/locale" component={LocaleList} />
           <Route path="/admin/articles" component={ArticlesList} />

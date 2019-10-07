@@ -78,4 +78,11 @@ router.post('/api/test_result', async function(req, res){
   res.send(JSON.stringify({ ok: true }));
 });
 
+router.get('/api/test_result', async function(req, res){
+  const db = getDB();
+  let results = await db.collection('testResult').find().sort({"date": 1}).toArray();
+  res.setHeader('Content-Type', 'application/json');
+  res.send(JSON.stringify(results));
+});
+
 module.exports = router;
