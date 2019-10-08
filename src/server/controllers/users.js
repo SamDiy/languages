@@ -3,6 +3,8 @@ const router = express.Router();
 const _ = require('lodash');
 const config = require('../config/config.api');
 const jwt = require('jsonwebtoken');
+const bcrypt = require('bcrypt');
+const saltRounds = 10;
 
 const { getDB } = require('../db/index');
 
@@ -21,7 +23,7 @@ router.get('/api/singIn', async function(req, res){
   let { userLogin, userPassword } = req.query;
   let user = await db.collection('user').findOne({ $or: [{ name: userLogin }, { email: userLogin }]});
   res.setHeader('Content-Type', 'application/json');
-  if(user && _.isEqual(user.password, userPassword)){
+  if(user && bcrypt.compareSync(userPassword, user.password)){
     user = _.omit(user, 'password')
     let userToken = jwt.sign(user, config.jwtKey);
     user.userToken = userToken;
@@ -51,6 +53,7 @@ router.get('/api/user', async function(req, res){
 router.post('/api/user', async function(req, res){
   const db = getDB();
   let newUser = req.body;
+  newUser = Object.assign({}, newUser, { password: bcrypt.hashSync(newUser.password, saltRounds) });
   await db.collection('user').save(newUser);
   res.setHeader('Content-Type', 'application/json');
   res.send(JSON.stringify(newUser));
@@ -59,6 +62,7 @@ router.post('/api/user', async function(req, res){
 router.put('/api/user', async function(req, res){
   const db = getDB();
   let newUser = _.omit(req.body, '_id');
+  newUser = Object.assign({}, newUser, { password: bcrypt.hashSync(newUser.password, saltRounds) });
   let { userId } = req.query;
   let user = await db.collection('user').findOne({ _id: db.ObjectId(userId)});
   user = Object.assign({}, user, newUser);

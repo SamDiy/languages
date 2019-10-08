@@ -49,6 +49,8 @@ class UserForm extends Component {
         <input onChange={(event)=>this.onChangeUserData('name', event.target.value)} type="text" className="form-control" value={this.props.selectedUser.name || ""}></input>
         <label>{translate('email')}</label>
         <input onChange={(event)=>this.onChangeUserData('email', event.target.value)} type="email" className="form-control" value={this.props.selectedUser.email || ""}></input>
+        <label>{translate('password')}</label>
+        <input onChange={(event)=>this.onChangeUserData('password', event.target.value)} type="password" className="form-control" value={this.props.selectedUser.password || ""}></input>
         <label>{translate('role')}</label>
         <Select value={currentUserRole} onChange={(selectedOption) => this.onChangeUserData('role', selectedOption.value)} options={optionsRoles}/>
       </div>

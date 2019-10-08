@@ -4,6 +4,7 @@ import { connect } from 'react-redux';
 import { translate } from '../lib/translater';
 import usersModule from '../store/modules/users';
 const usersActions = usersModule.actions;
+import { Redirect } from 'react-router-dom';
 
 class StartingPage extends Component{
 
@@ -18,8 +19,10 @@ class StartingPage extends Component{
   }
 
   render(){
+    let userToken = window.localStorage.getItem('userToken');
     return(
       <div className="enter-form">
+        {userToken && <Redirect to="/web" />}
         <form>
           <div className="form-group">
             <label>{translate('Login or email')}</label>
@@ -38,7 +41,9 @@ class StartingPage extends Component{
 }
 
 function mapStateToProps(state){
-  return {}
+  return {
+    currentUser: state.users.currentUser
+  }
 }
 
 export default connect(mapStateToProps, usersActions)(StartingPage);

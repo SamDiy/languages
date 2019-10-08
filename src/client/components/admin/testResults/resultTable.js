@@ -13,9 +13,7 @@ class ResultTable extends Component {
   constructor(props) {
     super(props);
     props.getTestResults();
-    this.state = {
-      focusedInput: false
-    };
+    this.state = {};
   }
   
   render(){
